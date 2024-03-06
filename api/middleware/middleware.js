@@ -17,10 +17,8 @@ async function validateUserId(req, res, next) {
     console.log("validateUserId middleware")
     if (!user) {
       res.status(404).json({ message: 'user not found' });
-      next();
     } else {
-      req.user = user;
-      res.status(200).send(user)
+      req.validUser = user;
       next();
     }
   } catch (err) {
@@ -33,7 +31,12 @@ async function validateUserId(req, res, next) {
 
 function validateUser(req, res, next) {
   // DO YOUR MAGIC
-  next();
+  const user = req.body;
+  if (!user.name) {
+    res.status(400).json({ message: 'missing required name field' });
+  } else {
+    next();
+  }
 }
 
 function validatePost(req, res, next) {
