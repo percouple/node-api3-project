@@ -38,26 +38,51 @@ router.put('/:id', validateUserId, validateUser, async (req, res) => {
   // and another middleware to check that the request body is valid
   try {
     const result = await Users.update(req.validUser.id, req.body)
+    console.log(result)
     res.status(200).json(result);
   } catch (err) {
-    res.status(500).json({ mesage: "Internal server error"});
+    res.status(500).json({ message: "Internal server error"});
   }
 });
 
-router.delete('/:id', validateUserId, (req, res) => {
+router.delete('/:id', validateUserId, async (req, res) => {
   // RETURN THE FRESHLY DELETED USER OBJECT
   // this needs a middleware to verify user id
+  try {
+    const user = await Users.getById(req.validUser.id);
+    const deleted = await Users.remove(user.id);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error"});
+  }
+  
 });
 
-router.get('/:id/posts', validateUserId, (req, res) => {
+router.get('/:id/posts', validateUserId, async (req, res) => {
   // RETURN THE ARRAY OF USER POSTS
   // this needs a middleware to verify user id
+  try {
+    const user = await Users.getById(req.validUser.id);
+    const posts = await Users.getUserPosts(user.id)
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error"});
+  }
 });
 
-router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
+router.post('/:id/posts', validateUserId, validatePost, async (req, res) => {
   // RETURN THE NEWLY CREATED USER POST
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
+  try {
+    const id = req.params.id;
+    const { text } = req.body;
+    console.log(text)
+    const posts = await Posts.insert({ user_id: id, text: text })
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error"});
+  }
 });
 
 // do not forget to export the router

@@ -11,10 +11,10 @@ TIMESTAMP: ${new Date().toLocaleString()}`)
 
 async function validateUserId(req, res, next) {
   // DO YOUR MAGIC
+  console.log("validateUserId middleware")
   try {
     const id = Number(req.params.id);
     const user = await Users.getById(id);
-    console.log("validateUserId middleware")
     if (!user) {
       res.status(404).json({ message: 'user not found' });
     } else {
@@ -25,12 +25,11 @@ async function validateUserId(req, res, next) {
     console.error('Error in validateUserId middleware: ', err);
     res.status(500).json({ message: 'Internal server error' });
   }
-
-  next();
 }
 
 function validateUser(req, res, next) {
   // DO YOUR MAGIC
+  console.log("validateUser middleware")
   const user = req.body;
   if (!user.name) {
     res.status(400).json({ message: 'missing required name field' });
@@ -41,7 +40,13 @@ function validateUser(req, res, next) {
 
 function validatePost(req, res, next) {
   // DO YOUR MAGIC
-  next();
+  console.log("validatePost middleware")
+  const post = req.body;
+  if (!post.text) {
+    res.status(400).json({ message: 'missing required text field' });
+  } else {
+    next();
+  }
 }
 
 // do not forget to expose these functions to other modules
